@@ -1,1 +1,1 @@
-![Database Schema](/backend/database-schema.png)
+![Database Schema](/database-schema.png)
