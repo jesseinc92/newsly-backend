@@ -1,0 +1,1 @@
+![Database Schema](/backend/database-schema.png)
