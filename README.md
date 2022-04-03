@@ -16,21 +16,19 @@ Authorization
 Newsdesk
 - GET - /articles
   - Provides a front-page overview of the newest stories available on the platform.
-- GET - /articles/[section]
-  - Returns a list of articles published under a specific section category (i.e. sports, business, world news)
-- GET - /articles/[keyword]
-  - Returns a list of articles pertaining to a keyword search term (i.e. elections, pizza, oceanography)
+- GET - /articles/search
+  - Returns a list of articles published under a specific section category (i.e. sports, business, world news), or a list of articles pertaining to a keyword search term (i.e. elections, pizza, oceanography)
 
 User
 - *GET - /user/[username]
   - Fetches the data of a specific user. This endpoint does not return password data.
-- *PATCH - /user/[username]
+- *PUT - /user/[username]
   - Updates the data of a user with the specified username.
 - *POST - /user/[username]/goals
   - Sets a specific users news consumption goals. In the case this has already been set, this endpoint updates the database.
-- *GET - /user/bookmark/[article_id]
+- *GET - /user/[username]/bookmark/[article_id]
   - Retrieves the article data for a specified bookmarked article. Will only retrieve bookmarks specific to the current authenticated user.
-- *POST - /user/bookmark/[article_id]
+- *POST - /user/[username]/bookmark/[article_id]
   - Adds a specified article to the currently authenticated user's bookmarks.
 
 **Authorization token required.*
