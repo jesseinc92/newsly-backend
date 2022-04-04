@@ -18,6 +18,8 @@ Newsdesk
   - Provides a front-page overview of the newest stories available on the platform.
 - GET - /articles/search
   - Returns a list of articles published under a specific section category (i.e. sports, business, world news), or a list of articles pertaining to a keyword search term (i.e. elections, pizza, oceanography)
+- GET - /articles/read/[articleId]
+  - Returns a single article based on 
 
 User
 - *GET - /user/[username]
@@ -26,9 +28,9 @@ User
   - Updates the data of a user with the specified username.
 - *POST - /user/[username]/goals
   - Sets a specific users news consumption goals. In the case this has already been set, this endpoint updates the database.
-- *GET - /user/[username]/bookmark/[article_id]
+- *GET - /user/[username]/bookmark/[articleId]
   - Retrieves the article data for a specified bookmarked article. Will only retrieve bookmarks specific to the current authenticated user.
-- *POST - /user/[username]/bookmark/[article_id]
+- *POST - /user/[username]/bookmark/[articleId]
   - Adds a specified article to the currently authenticated user's bookmarks.
 
 **Authorization token required.*

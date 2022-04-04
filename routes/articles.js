@@ -1,15 +1,22 @@
 const express = require('express');
+const { BadRequestError } = require('../expressError');
 const router = new express.Router();
+
+const Article = require('../models/article');
 
 /** GET /articles => { articles }
  * 
- *  Returns { article: { }}
+ *  Accepts an optional query parameter for results pagination
+ * 
+ *  Returns { articles: [ ]}
  *  
  *  No Authorization Required
  */
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
+  const pageNum = req.query.page;
   try {
-
+    let response = await Article.getNewestArticles(pageNum);
+    return res.json({ articles: response })
   } catch(err) {
     next(err);
   }
@@ -17,7 +24,7 @@ router.get('/', (req, res, next) => {
 
 /** GET /articles/search =>
  * 
- *  Accepts a query string wtih either 'keyword' or 'section'.
+ *  Accepts a mandatory query string wtih either 'keyword' or 'section'.
  * 
  *  Returns a list of articles by matching keyword, or a list
  *    of articles by news section.
@@ -26,9 +33,43 @@ router.get('/', (req, res, next) => {
  * 
  *  No Authorization Required
  */
-router.get('/search', (req, res, next) => {
+router.get('/search', async (req, res, next) => {
+  const queryFilter = req.query;
+  const filterItem = Object.values(queryFilter)[0];
+  let queryParam;
   try{
+    // Construct filter query from request
+    if (Object.keys(queryFilter)[0] === 'keyword') {
+      queryParam = `/search?q=${filterItem}&`
+    } else if (Object.keys(queryFilter)[0] === 'section') {
+      queryParam = `/${filterItem}?`;
+    } else {
+      throw new BadRequestError();
+    }
 
+    let response = await Article.getArticlesByFilter(queryParam);
+    return res.json({ articles: response });
+  } catch(err) {
+    next(err);
+  }
+});
+
+/** GET /articles/{ articleId } => { article }
+ * 
+ *  Accepts an article ID for a single article and returns
+ *    all relevant fields for consumption. ArticleId MUST
+ *    be encoded before passing.
+ * 
+ *  Returns { article: [ ]}
+ * 
+ *  No Authorization Required
+ */
+router.get('/:articleId', async (req, res, next) => {
+  const id = req.params.articleId;
+  try {
+    console.log(id)
+    let response = await Article.getSingleArticle(id);
+    return res.json({ article: response });
   } catch(err) {
     next(err);
   }

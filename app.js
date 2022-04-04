@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const newsDeskRoutes = require('./routes/articles');
+const articleRoutes = require('./routes/articles');
 const userRoutes = require('./routes/user');
 
 const app = new express();
@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes imported from their respective routers
-app.use('/articles', newsDeskRoutes);
+app.use('/articles', articleRoutes);
 app.use('/user', userRoutes);
 
 // Error handler if there are no endpoint matches

@@ -37,6 +37,22 @@ router.post('/:username/goals', (req, res, next) => {
 
 });
 
+/** POST /user/{ username }/metrics => { metrics }
+ * 
+ *  Called whenever an authed user views a new article.
+ *    Endopint adds current article to calculation pool,
+ *    adds up category views, and notifies user if they are
+ *    meeting or not meeting goals.
+ * 
+ *  Accepts article data from request body and returns the
+ *    full metrics data for the authed user.
+ * 
+ *  Authorization: same user
+ */
+router.post('/:username/metrics', (req, res, next) => {
+
+});
+
 /** GET /user/{ username }/bookmark/{ articleId }
  * 
  *  Returns { article: { }}
