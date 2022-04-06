@@ -1,14 +1,23 @@
 const express = require('express');
 const router = new express.Router();
 
+const User = require('../models/user');
+
 /** GET /user/{ username } => { user }
  * 
  *  Returns { user: { }}
  * 
  *  Authorization: same user
  */
-router.get('/:username', (req, res, next) => {
-
+router.get('/:username', async (req, res, next) => {
+  const username = req.params.username;
+  try {
+    let response = User.get(username);
+    let user = response.data;
+    return res.json({ user });
+  } catch(err) {
+    next(err)
+  }
 });
 
 /** PUT /user/{ username } => { user }
@@ -21,7 +30,11 @@ router.get('/:username', (req, res, next) => {
  *  Authorization: same user
  */
 router.put('/:username', (req, res, next) => {
+  try {
 
+  } catch(err) {
+    next(err)
+  }
 });
 
 /** POST /user/{ username }/goals
@@ -34,7 +47,11 @@ router.put('/:username', (req, res, next) => {
  *  Authorization: same user
  */
 router.post('/:username/goals', (req, res, next) => {
+  try {
 
+  } catch(err) {
+    next(err)
+  }
 });
 
 /** POST /user/{ username }/metrics => { metrics }
@@ -50,7 +67,11 @@ router.post('/:username/goals', (req, res, next) => {
  *  Authorization: same user
  */
 router.post('/:username/metrics', (req, res, next) => {
+  try {
 
+  } catch(err) {
+    next(err)
+  }
 });
 
 /** GET /user/{ username }/bookmark/{ articleId }
@@ -60,7 +81,11 @@ router.post('/:username/metrics', (req, res, next) => {
  *  Authorization: same user
  */
 router.get('/:username/bookmark/:articleId', (req, res, next) => {
+  try {
 
+  } catch(err) {
+    next(err)
+  }
 });
 
 /** POST /user/{ username }/bookmark/{ articleId }
@@ -70,7 +95,11 @@ router.get('/:username/bookmark/:articleId', (req, res, next) => {
  *  Authorization: same user
  */
 router.post('/:username/bookmark/:articleId', (req, res, next) => {
+  try {
 
+  } catch(err) {
+    next(err)
+  }
 });
 
 module.exports = router;

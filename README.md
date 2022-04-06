@@ -19,7 +19,7 @@ Newsdesk
 - GET - /articles/search
   - Returns a list of articles published under a specific section category (i.e. sports, business, world news), or a list of articles pertaining to a keyword search term (i.e. elections, pizza, oceanography)
 - GET - /articles/read/[articleId]
-  - Returns a single article based on 
+  - Returns a single article based on a selected article ID. All available content fields are returned for user consumption.
 
 User
 - *GET - /user/[username]
