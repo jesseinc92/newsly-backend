@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { apiKey, BASE_URL } = require('../config');
+const { API_KEY, BASE_URL } = require('../config');
 const { ExpressError, BadRequestError } = require('../expressError');
 
 class Article {
@@ -14,7 +14,7 @@ class Article {
   static async getNewestArticles(page = 1) {
     try {
       if (page < 1) throw new BadRequestError();
-      let response = await axios.get(`${BASE_URL}/search?api-key=${apiKey}&page-size=20&page=${page}`);
+      let response = await axios.get(`${BASE_URL}/search?api-key=${API_KEY}&page-size=20&page=${page}`);
       let newestArticles = response.data.response.results;
       return newestArticles;
     } catch(err) {
@@ -31,7 +31,7 @@ class Article {
   static async getArticlesByFilter(queryFilter) {
     try {
       if (!queryFilter) throw new BadRequestError();
-      let response = await axios.get(`${BASE_URL}${queryFilter}api-key=${apiKey}`);
+      let response = await axios.get(`${BASE_URL}${queryFilter}api-key=${API_KEY}`);
       let filteredArticles = response.data.response.results;
       return filteredArticles;
     } catch(err) {
@@ -46,7 +46,7 @@ class Article {
    */
   static async getSingleArticle(articleId) {
     try {
-      let response = await axios.get(`${BASE_URL}/${articleId}?api-key=${apiKey}&show-fields=all`);
+      let response = await axios.get(`${BASE_URL}/${articleId}?api-key=${API_KEY}&show-fields=all`);
       let singleArticle = response.data.response.content;
       return singleArticle;
     } catch(err) {

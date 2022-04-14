@@ -1,4 +1,5 @@
 const express = require('express');
+const { ensureSameUser } = require('../middleware/auth');
 const router = new express.Router();
 
 const User = require('../models/user');
@@ -12,8 +13,7 @@ const User = require('../models/user');
 router.get('/:username', async (req, res, next) => {
   const username = req.params.username;
   try {
-    let response = User.get(username);
-    let user = response.data;
+    const user = await User.get(username);
     return res.json({ user });
   } catch(err) {
     next(err)
@@ -29,11 +29,34 @@ router.get('/:username', async (req, res, next) => {
  * 
  *  Authorization: same user
  */
-router.put('/:username', (req, res, next) => {
+router.put('/:username', async (req, res, next) => {
+  const { username, firstName, lastName } = req.body;
   try {
-
+    console.log(req.body)
+    const user = await User.update({ username, firstName, lastName });
+    return res.json({ user });
   } catch(err) {
     next(err)
+  }
+});
+
+/** DELETE /user/{ username }
+ * 
+ *  Accepts a username as a parameter and deletes the
+ *    selected user profile from the database. Also
+ *    removes all linked bookmarked articles and metrics.
+ *  
+ *  Returns { deleted: username }
+ * 
+ *  Authorization: same user
+ */
+router.delete('/:username', async (req, res, next) => {
+  const username = req.params.username;
+  try {
+    await User.delete(username);
+    return res.json({ deleted: username });
+  } catch(err) {
+    next(err);
   }
 });
 
@@ -74,31 +97,52 @@ router.post('/:username/metrics', (req, res, next) => {
   }
 });
 
-/** GET /user/{ username }/bookmark/{ articleId }
- * 
- *  Returns { article: { }}
- * 
- *  Authorization: same user
- */
-router.get('/:username/bookmark/:articleId', (req, res, next) => {
-  try {
-
-  } catch(err) {
-    next(err)
-  }
-});
-
 /** POST /user/{ username }/bookmark/{ articleId }
  * 
  *  Returns { article: { }}
  * 
  *  Authorization: same user
  */
-router.post('/:username/bookmark/:articleId', (req, res, next) => {
+ router.post('/:username/bookmark', async (req, res, next) => {
+  const username = req.params.username;
+  const article = req.body;
   try {
-
+    const bookmark = await User.addBookmark(username, article);
+    return res.status(201).json({ article: bookmark });
   } catch(err) {
     next(err)
+  }
+});
+
+/** GET /user/{ username }/bookmark/{ articleId }
+ * 
+ *  Returns { article: { }}
+ * 
+ *  Authorization: same user
+ */
+router.get('/:username/bookmark/:articleId', async (req, res, next) => {
+  const { username, articleId } = req.params;
+  try {
+    const bookmark = await User.getBookmark(username, articleId);
+    return res.json({ article: bookmark });
+  } catch(err) {
+    next(err)
+  }
+});
+
+/** DELETE /user/{ username }/bookmark/{ articleId }
+ * 
+ *  Returns { bookmark: deleted }
+ * 
+ *  Authorization: same user
+ */
+router.delete('/:username/bookmark/:articleId', async (req, res, next) => {
+  const { username, articleId } = req.params;
+  try {
+    await User.removeBookmark(username, articleId);
+    return res.json({ bookmark: deleted });
+  } catch(err) {
+    next(err);
   }
 });
 

@@ -65,10 +65,9 @@ router.get('/search', async (req, res, next) => {
  *  No Authorization Required
  */
 router.get('/:articleId', async (req, res, next) => {
-  const id = req.params.articleId;
+  const articleId = req.params.articleId;
   try {
-    console.log(id)
-    let response = await Article.getSingleArticle(id);
+    let response = await Article.getSingleArticle(articleId);
     return res.json({ article: response });
   } catch(err) {
     next(err);
