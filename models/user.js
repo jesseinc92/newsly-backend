@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { BadRequestError, NotFoundError, UnauthorizedError } = require('../expressError');
 const { BCRYPT_WORK_FACTOR } = require('../config');
+const Metric = require('./metric');
 const db = require('../db');
 
 class User {
@@ -95,9 +96,25 @@ class User {
 
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`'User ${username} does not exist.`);
+    if (!user) throw new NotFoundError(`User ${username} does not exist.`);
 
-    // TODO: Search and return metrics from db
+    // Search and return bookmarks from db
+    const savedResults = await db.query(
+        `SELECT
+          id,
+          user_id AS "userId",
+          title AS "webTitle",
+          section_id AS "sectionId",
+          section_name AS "sectionName"
+         FROM bookmarks
+         WHERE user_id = $1`,
+        [username]
+    );
+
+    user.bookmarks = savedResults.rows;
+
+    const metrics = await Metric.get(username);
+    user.metrics = metrics;
 
     return user;
   }
@@ -129,6 +146,24 @@ class User {
 
     if (!user) throw new NotFoundError(`User ${username} does not exist`);
 
+    // Search and return bookmarks from db
+    const savedResults = await db.query(
+      `SELECT
+        id,
+        user_id AS "userId",
+        title AS "webTitle",
+        section_id AS "sectionId",
+        section_name AS "sectionName"
+       FROM bookmarks
+       WHERE user_id = $1`,
+      [username]
+    );
+
+    user.bookmarks = savedResults.rows;
+
+    const metrics = await Metric.get(username);
+    user.metrics = metrics;
+
     return user;
   }
 
@@ -157,8 +192,39 @@ class User {
    * @param {String} username - Associated username
    * @param {Object} article - All article fields to save
    */
-  static async addBookmark(username, article) {
+  static async addBookmark(username, { articleId, title, sectionId, sectionName }) {
+    console.log(username, articleId, title, sectionId, sectionName)
 
+    const duplicateCheck = await db.query(
+        `SELECT id AS "articleId"
+         FROM bookmarks
+         WHERE id = $1 AND user_id = $2`,
+        [articleId ,username]
+    );
+
+    if (duplicateCheck.rows[0]) throw new BadRequestError(`Bookmark already exists!`);
+
+    const result = await db.query(
+        `INSERT INTO bookmarks (
+          id,
+          user_id,
+          title,
+          section_id,
+          section_name 
+        )
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING 
+          id,
+          user_id AS "userId",
+          title AS "webTitle",
+          section_id AS "sectionId",
+          section_name AS "sectionName"`,
+        [articleId, username, title, sectionId, sectionName]
+    );
+
+    const newArticle = result.rows[0];
+
+    return newArticle;
   }
 
   /** Retrieves an article from the bookmarks database for
@@ -168,7 +234,20 @@ class User {
    * @param {String} articleId - Article ID to lookup article
    */
   static async getBookmark(username, articleId) {
+    const result = await db.query(
+        `SELECT 
+          id AS "articleId",
+          user_id AS "userId"
+         FROM bookmarks
+         WHERE id = $1 AND user_id = $2`,
+        [articleId, username]
+    );
 
+    const article = result.rows[0];
+
+    if (!article) throw new NotFoundError(`Bookmark wasn't found!`);
+
+    return article;
   }
 
   /** Removes an article from the bookmarks database.
@@ -177,7 +256,14 @@ class User {
    * @param {String} articleId - Article ID to lookup article 
    */
   static async removeBookmark(username, articleId) {
+    const result = await db.query(
+        `DELETE FROM bookmarks
+         WHERE id = $1 AND user_id = $2
+         RETURNING id, user_id`,
+        [articleId, username]
+    );
 
+    if (!result.rows[0]) throw new NotFoundError(`Bookmark not found!`);
   }
 }
 

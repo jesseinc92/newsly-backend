@@ -1,5 +1,6 @@
 const express = require('express');
 const createToken = require('../helpers/tokens');
+const Metric = require('../models/metric');
 const router = new express.Router();
 
 const User = require('../models/user');
@@ -30,6 +31,7 @@ router.post('/register', async (req, res, next) => {
   const user = req.body;
   try {
     const newUser = await User.register(user);
+    const newMetrics = await Metric.create(user);
     const token = createToken(newUser);
     return res.status(201).json({ token });
   } catch(err) {

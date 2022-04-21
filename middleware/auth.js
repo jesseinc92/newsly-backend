@@ -16,19 +16,6 @@ function authenticateJWT(req, res, next) {
   }
 }
 
-
-// function ensureSameUser(req, res, next) {
-//   try {
-//     const user = res.locals.user;
-//     if (!(user && (user.username === req.params.username))) {
-//       throw new UnauthorizedError();
-//     }
-//   } catch(err) {
-//     return next();
-//   }
-// }
-
 module.exports = { 
-  authenticateJWT, 
-  //ensureSameUser 
+  authenticateJWT
 };

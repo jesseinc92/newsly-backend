@@ -1,5 +1,5 @@
 const express = require('express');
-const { ensureSameUser } = require('../middleware/auth');
+const Metric = require('../models/metric');
 const router = new express.Router();
 
 const User = require('../models/user');
@@ -16,7 +16,7 @@ router.get('/:username', async (req, res, next) => {
     const user = await User.get(username);
     return res.json({ user });
   } catch(err) {
-    next(err)
+    return next(err)
   }
 });
 
@@ -32,7 +32,6 @@ router.get('/:username', async (req, res, next) => {
 router.put('/:username', async (req, res, next) => {
   const { username, firstName, lastName } = req.body;
   try {
-    console.log(req.body)
     const user = await User.update({ username, firstName, lastName });
     return res.json({ user });
   } catch(err) {
@@ -69,9 +68,13 @@ router.delete('/:username', async (req, res, next) => {
  * 
  *  Authorization: same user
  */
-router.post('/:username/goals', (req, res, next) => {
+router.post('/:username/goals', async (req, res, next) => {
+  const username = req.params.username;
+  const goal = req.body.goal;
   try {
-
+    console.log(goal)
+    const updated = await Metric.updateGoal(username, goal);
+    return res.json({ metrics: updated });
   } catch(err) {
     next(err)
   }
@@ -89,24 +92,28 @@ router.post('/:username/goals', (req, res, next) => {
  * 
  *  Authorization: same user
  */
-router.post('/:username/metrics', (req, res, next) => {
+router.post('/:username/metrics', async (req, res, next) => {
+  const username = req.params.username;
+  const { metrics } = req.body;
   try {
-
+    const response = await Metric.updateMetrics(username, metrics);
+    return res.json({ response });
   } catch(err) {
     next(err)
   }
 });
 
-/** POST /user/{ username }/bookmark/{ articleId }
+/** POST /user/{ username }/bookmarks
  * 
  *  Returns { article: { }}
  * 
  *  Authorization: same user
  */
- router.post('/:username/bookmark', async (req, res, next) => {
+ router.post('/:username/bookmarks', async (req, res, next) => {
   const username = req.params.username;
   const article = req.body;
   try {
+    console.log(username, article)
     const bookmark = await User.addBookmark(username, article);
     return res.status(201).json({ article: bookmark });
   } catch(err) {
@@ -114,33 +121,19 @@ router.post('/:username/metrics', (req, res, next) => {
   }
 });
 
-/** GET /user/{ username }/bookmark/{ articleId }
- * 
- *  Returns { article: { }}
- * 
- *  Authorization: same user
- */
-router.get('/:username/bookmark/:articleId', async (req, res, next) => {
-  const { username, articleId } = req.params;
-  try {
-    const bookmark = await User.getBookmark(username, articleId);
-    return res.json({ article: bookmark });
-  } catch(err) {
-    next(err)
-  }
-});
-
-/** DELETE /user/{ username }/bookmark/{ articleId }
+/** DELETE /user/{ username }/bookmark
  * 
  *  Returns { bookmark: deleted }
  * 
  *  Authorization: same user
  */
-router.delete('/:username/bookmark/:articleId', async (req, res, next) => {
-  const { username, articleId } = req.params;
+router.delete('/:username/bookmark', async (req, res, next) => {
+  const username = req.params.username;
+  const articleId = req.body.articleId;
   try {
+    
     await User.removeBookmark(username, articleId);
-    return res.json({ bookmark: deleted });
+    return res.json({ message: 'Bookmark deleted!' });
   } catch(err) {
     next(err);
   }
