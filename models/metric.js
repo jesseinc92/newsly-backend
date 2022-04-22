@@ -58,7 +58,7 @@ class Metric {
 
     const metrics = result.rows[0]
     metrics.metricsqueue = metrics.metricsqueue ? metrics.metricsqueue.split(',') : [];
-
+    
     return metrics;
   }
 

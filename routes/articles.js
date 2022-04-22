@@ -35,14 +35,20 @@ router.get('/', async (req, res, next) => {
  */
 router.get('/search', async (req, res, next) => {
   const queryFilter = req.query;
-  const filterItem = Object.values(queryFilter)[0];
+  const filterItem = Object.values(queryFilter)[0].toLowerCase();
   let queryParam;
   try{
     // Construct filter query from request
     if (Object.keys(queryFilter)[0] === 'keyword') {
       queryParam = `/search?q=${filterItem}&`
     } else if (Object.keys(queryFilter)[0] === 'section') {
-      queryParam = `/${filterItem}?`;
+      if (filterItem === 'opinion') {
+        queryParam = `/commentisfree?`;
+      } else if (filterItem === 'lifestyle') {
+        queryParam = `/lifeandstyle?`;
+      } else {
+        queryParam = `/${filterItem}?`;
+      }
     } else {
       throw new BadRequestError();
     }
