@@ -5,7 +5,7 @@ const API_KEY = '191c9628-268e-4980-8233-afb6555c1574'
 const BASE_URL = 'https://content.guardianapis.com';
 
 // Port that server listens to requests on
-const PORT = process.env.PORT || 3001;
+const PORT = +process.env.PORT || 3001;
 
 // Secret key for bcrypt
 const SECRET_KEY = 'Archer1234!'
