@@ -193,8 +193,6 @@ class User {
    * @param {Object} article - All article fields to save
    */
   static async addBookmark(username, { articleId, title, sectionId, sectionName }) {
-    console.log(username, articleId, title, sectionId, sectionName)
-
     const duplicateCheck = await db.query(
         `SELECT id AS "articleId"
          FROM bookmarks

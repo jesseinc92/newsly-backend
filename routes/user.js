@@ -113,7 +113,7 @@ router.post('/:username/metrics', async (req, res, next) => {
   const username = req.params.username;
   const article = req.body;
   try {
-    console.log(username, article)
+    console.log("route", username, article)
     const bookmark = await User.addBookmark(username, article);
     return res.status(201).json({ article: bookmark });
   } catch(err) {
