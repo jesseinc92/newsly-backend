@@ -3,7 +3,7 @@ const createToken = require('../helpers/tokens');
 const Metric = require('../models/metric');
 const router = new express.Router();
 
-const User = require('../models/user');
+const User = require('../models/User');
 
 /** POST /auth/token => { token }
  * 

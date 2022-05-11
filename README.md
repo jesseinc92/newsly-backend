@@ -1,4 +1,4 @@
-# NewsMojo Backend
+# Newsly Backend
 
 ## Database Schema
 ![Database Schema](/database-schema.png)
